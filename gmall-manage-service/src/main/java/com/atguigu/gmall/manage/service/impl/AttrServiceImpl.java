@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +38,16 @@ public class AttrServiceImpl implements AttrService {
     public List<PmsBaseAttrInfo> attrInfoList(String catalog3Id) {
         PmsBaseAttrInfo pmsBaseAttrInfo = new PmsBaseAttrInfo();
         pmsBaseAttrInfo.setCatalog3Id(catalog3Id);
-        return pmsBaseAttrInfoMapper.select(pmsBaseAttrInfo);
+        //平台属性
+        List<PmsBaseAttrInfo> pmsBaseAttrInfos = pmsBaseAttrInfoMapper.select(pmsBaseAttrInfo);
+        //平台属性值
+        for (PmsBaseAttrInfo baseAttrInfo : pmsBaseAttrInfos) {
+            PmsBaseAttrValue pmsBaseAttrValue = new PmsBaseAttrValue();
+            pmsBaseAttrValue.setAttrId(baseAttrInfo.getId());
+            List<PmsBaseAttrValue> pmsBaseAttrValues = pmsBaseAttrValueMapper.select(pmsBaseAttrValue);
+            baseAttrInfo.setAttrValueList(pmsBaseAttrValues);
+        }
+        return pmsBaseAttrInfos;
     }
 
     @Override
